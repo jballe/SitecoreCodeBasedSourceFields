@@ -2,6 +2,9 @@ version: 0.1.{build}
 
 os: Windows Server 2012
 
+init:
+- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
 environment:
   filecryptkey:
     secure: O+Xh3uOvePVVWMIFI9OW0O6Oew0piFeAs5sS7Oj693c=
@@ -13,11 +16,10 @@ cache:
 install:
   - nuget install secure-file -ExcludeVersion  
   - secure-file\tools\secure-file -decrypt lib\sitecore.zip.enc -secret %filecryptkey%
-  - PS: Expand-Archive -Path lib\sitecore.zip -DestinationPath src\Website\bin
 
 assembly_info:
   patch: true
-  file: MyVersion.cs
+  file: AssemblyVersion.cs
   assembly_version: '{version}'
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'  
@@ -27,6 +29,9 @@ assembly_info:
 
 platform: Any CPU
 configuration: Release
+
+before_build:
+  - ps: Expand-Archive -Path lib\sitecore.zip -DestinationPath src\Website\bin
   	
 build:
   project: SitecoreCodeBasedSourceFields.sln
@@ -44,3 +49,8 @@ artifacts:
   - path: out\*.nupkg
 
 # Deploy
+
+on_finish:
+- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+# Notification
