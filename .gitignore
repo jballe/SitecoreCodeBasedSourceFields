@@ -1,0 +1,24 @@
+#Visual studio
+.vs/**
+*.suo
+*.user
+bin
+obj
+
+#NCrunch
+*.ncrunchproject
+*.cache
+
+#Resharper
+
+#nuget
+packages
+
+#Sitecore
+src/Website/**/*.*
+src/Website/App_Data/**
+!src/Website/Website.csproj
+!src/Website/packages.config
+!src/Website/App_Config/ConnectionStrings.config
+!src/Website/App_Config/Include/Z.Runtime/
+!src/Website/Properties/

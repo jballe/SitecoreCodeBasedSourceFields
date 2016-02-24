@@ -1,0 +1,20 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SitecoreCodeBasedSourceFields</id>
+    <version>$version$</version>
+    <title>Custom codebased source lookup fields for Sitecore</title>
+    <authors>Jesper Balle</authors>
+    <projectUrl>https://github.com/jballe/SitecoreCodeBasedSourceFields</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Custom fields for Sitecore which allows you to have lookup fields with values provided from you code</description>
+    <tags>sitecore fields</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\SitecoreCodeSourceFields.dll" target="lib\net40" />
+
+    <!-- TDS -->
+    <!-- file src="..\SystemContent.Core\Package_Release\SitecoreCodeBasedSourceFields.SystemContent.Core.scitems.update" /-->
+
+  </files>
+</package>
