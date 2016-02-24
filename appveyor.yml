@@ -22,25 +22,23 @@ assembly_info:
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'  
 
+
 # Build
 
 platform: Any CPU
 configuration: Release
-  
-before_build:
-	
+  	
 build:
   project: SitecoreCodeBasedSourceFields.sln
   publish_nuget: true             # package projects with .nuspec files and push to artifacts
   publish_nuget_symbols: true     # generate and publish NuGet symbol packages
+  verbosity: detailed
   
-verbosity: detailed
-
 # Test
 test:
   assemblies:
     - SitecoreCodeSourceFields.UnitTests.dll
-	
+
 # Artifacts
 artifacts:
   - path: out\*.nupkg
