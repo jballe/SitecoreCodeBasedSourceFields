@@ -31,7 +31,15 @@ platform: Any CPU
 configuration: Release
 
 before_build:
-  - ps: Expand-Archive -Path lib\sitecore.zip -DestinationPath src\Website\bin
+  - ps: |
+      $shell = new-object -com shell.application
+      $src = (Join-Path $PWD "lib\sitecore.zip"))
+      $dst = (Join-Path $PWD "src\website\bin"))
+      $zip = $shell.NameSpace($path)
+      foreach($item in $zip.items())
+      {
+        $shell.Namespace($dst).copyhere($item)
+      }
 
 build:
   project: SitecoreCodeBasedSourceFields.sln
