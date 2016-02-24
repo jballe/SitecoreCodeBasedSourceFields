@@ -1,0 +1,48 @@
+version: 0.1.{build}
+
+os: Windows Server 2012
+
+environment:
+  filecryptkey:
+    secure: O+Xh3uOvePVVWMIFI9OW0O6Oew0piFeAs5sS7Oj693c=
+
+cache:
+  - packages -> **\packages.config
+  - bld
+
+install:
+  - nuget install secure-file -ExcludeVersion  
+  - secure-file\tools\secure-file -decrypt lib\sitecore.zip.enc -secret %filecryptkey%
+  - PS: Expand-Archive -Path lib\sitecore.zip -DestinationPath src\Website\bin
+
+assembly_info:
+  patch: true
+  file: MyVersion.cs
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'  
+
+# Build
+
+platform: Any CPU
+configuration: Release
+  
+before_build:
+	
+build:
+  project: SitecoreCodeBasedSourceFields.sln
+  publish_nuget: true             # package projects with .nuspec files and push to artifacts
+  publish_nuget_symbols: true     # generate and publish NuGet symbol packages
+  
+verbosity: detailed
+
+# Test
+test:
+  assemblies:
+    - SitecoreCodeSourceFields.UnitTests.dll
+	
+# Artifacts
+artifacts:
+  - path: out\*.nupkg
+
+# Deploy
