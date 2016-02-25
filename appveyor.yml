@@ -19,7 +19,7 @@ install:
 
 assembly_info:
   patch: true
-  file: AssemblyVersion.cs
+  file: '**\AssemblyInfo.*'
   assembly_version: '{version}'
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'  
@@ -36,10 +36,15 @@ before_build:
       $src = (Join-Path $PWD "lib\sitecore.zip")
       $dst = (Join-Path $PWD "src\website\bin")
       $zip = $shell.NameSpace($path)
+      $target = $shell.NameSpace($dst)
+      Write-Host $zip
+      Write-Host $target
       foreach($item in $zip.items())
       {
-        $shell.Namespace($dst).copyhere($item)
+        $target.copyhere($item)
       }
+  - cmd: "echo Building version:%appveyor_build_version%"
+  - cmd: "nuget restore"
 
 build:
   project: SitecoreCodeBasedSourceFields.sln
