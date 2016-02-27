@@ -52,7 +52,7 @@ before_build:
 #      }
   - ps: |
       cd bld
-      ./InstallSitecore.ps1 ${ENV:SitecoreSdnUsername} ${ENV:SitecoreSdnPassword}
+      ./DownloadSitecore.ps1 ${ENV:SitecoreSdnUsername} ${ENV:SitecoreSdnPassword}
   - ps: gitversion /l console /output buildserver /updateassemblyinfo
   - cmd: "echo Building version: %GitVersion_NuGetVersion% by %appveyor_build_version%"
   - cmd: "nuget restore"
