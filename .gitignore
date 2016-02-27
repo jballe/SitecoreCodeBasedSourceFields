@@ -13,6 +13,7 @@ obj
 
 #nuget
 packages
+*.nupkg
 
 #Sitecore
 src/Website/**/*.*
