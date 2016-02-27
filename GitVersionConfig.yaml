@@ -1,4 +1,4 @@
-assembly-versioning-scheme: '{NuGetVersion}'
+assembly-versioning-scheme: 'MajorMinorPatch'
 mode: ContinuousDelivery
 branches: 
   master:
