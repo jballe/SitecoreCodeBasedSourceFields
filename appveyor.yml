@@ -8,11 +8,14 @@ environment:
 
 cache:
   - packages -> **\packages.config
-  - bld
+  - bld\sitecore.zip -> bld\DownloadSitecore.ps1 
+  - C:\ProgramData\chocolatey\bin -> appveyor.yml
+  - C:\ProgramData\chocolatey\lib -> appveyor.yml
 
 install:
   - nuget install secure-file -ExcludeVersion  
   - secure-file\tools\secure-file -decrypt lib\sitecore.zip.enc -secret %filecryptkey%
+  - choco install gitversion.portable -y
 
 assembly_info:
   patch: true
@@ -43,7 +46,8 @@ before_build:
       {
         $target.copyhere($item)
       }
-  - cmd: "echo Building version:%appveyor_build_version%"
+  - ps: gitversion /l console /output buildserver /updateassemblyinfo
+  - cmd: "echo Building version: %GitVersion_NuGetVersion% by %appveyor_build_version%"
   - cmd: "nuget restore"
 
 build:
@@ -51,6 +55,11 @@ build:
   publish_nuget: true             # package projects with .nuspec files and push to artifacts
   publish_nuget_symbols: true     # generate and publish NuGet symbol packages
   verbosity: detailed
+
+after_build:
+  - cmd: ECHO nuget pack src\SitecoreCodeSourceFields\SitecoreCodeBasedSourceFields.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
+  - cmd: nuget pack src\SitecoreCodeSourceFields\SitecoreCodeBasedSourceFields.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
+  - cmd: appveyor PushArtifact "src\SitecoreCodeSourceFields\SitecoreCodeBasedSourceFields.%GitVersion_NuGetVersion%.nupkg"
   
 # Test
 test:
@@ -62,6 +71,5 @@ artifacts:
   - path: out\*.nupkg
 
 # Deploy
-
 
 # Notification
