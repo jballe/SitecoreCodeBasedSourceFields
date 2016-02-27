@@ -1,4 +1,4 @@
-version: 0.1.{build}
+version: {build}
 
 os: Windows Server 2012
 
@@ -18,7 +18,7 @@ install:
   - choco install gitversion.portable -y
 
 assembly_info:
-  patch: true
+  patch: false
   file: '**\AssemblyInfo.*'
   assembly_version: '{version}'
   assembly_file_version: '{version}'
@@ -52,12 +52,12 @@ before_build:
 
 build:
   project: SitecoreCodeBasedSourceFields.sln
-  publish_nuget: true             # package projects with .nuspec files and push to artifacts
-  publish_nuget_symbols: true     # generate and publish NuGet symbol packages
-  verbosity: detailed
+  publish_nuget: false             # package projects with .nuspec files and push to artifacts
+  publish_nuget_symbols: false     # generate and publish NuGet symbol packages
+  include_nuget_references: false  # add -IncludeReferencedProjects option while packaging NuGet artifacts
+  verbosity: normal                # quiet|minimal|normal|detailed
 
 after_build:
-  - cmd: ECHO nuget pack src\SitecoreCodeSourceFields\SitecoreCodeBasedSourceFields.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
   - cmd: nuget pack src\SitecoreCodeSourceFields\SitecoreCodeBasedSourceFields.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
   - cmd: appveyor PushArtifact "SitecoreCodeBasedSourceFields.%GitVersion_NuGetVersion%.nupkg"
   
@@ -72,5 +72,12 @@ artifacts:
   - path: SitecoreCodeBasedSourceFields.%GitVersion_NuGetVersion%.nupkg
 
 # Deploy
+deploy:
+  - provider: GitHub
+    artifact: /.*\.nupkg
+    draft: true
+    prerelease: false
+    on:
+      - master
 
 # Notification
