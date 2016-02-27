@@ -35,24 +35,24 @@ platform: Any CPU
 configuration: Release
 
 before_build:
-#  - ps: |
-#      $shell = new-object -com shell.application
-#      $src = (Join-Path $PWD "lib\sitecore.zip")
-#      $dst = (Join-Path $PWD "src\website\bin")
-#      If((Test-Path $dst) -eq $false) {
-#          md $dst
-#      }
-#      
-#      $zip = $shell.NameSpace($src)
-#      $target = $shell.NameSpace($dst)
-#      Write-Host $target
-#      foreach($item in $zip.items())
-#      {
-#        $target.copyhere($item)
-#      }
   - ps: |
-      cd bld
-      ./DownloadSitecore.ps1 ${ENV:SitecoreSdnUsername} ${ENV:SitecoreSdnPassword}
+      $shell = new-object -com shell.application
+      $src = (Join-Path $PWD "lib\sitecore.zip")
+      $dst = (Join-Path $PWD "src\website\bin")
+      If((Test-Path $dst) -eq $false) {
+          md $dst
+      }
+      
+      $zip = $shell.NameSpace($src)
+      $target = $shell.NameSpace($dst)
+      Write-Host $target
+      foreach($item in $zip.items())
+      {
+        $target.copyhere($item)
+      }
+#  - ps: |
+#      cd bld
+#      ./DownloadSitecore.ps1 ${ENV:SitecoreSdnUsername} ${ENV:SitecoreSdnPassword}
   - ps: gitversion /l console /output buildserver /updateassemblyinfo
   - cmd: "echo Building version: %GitVersion_NuGetVersion% by %appveyor_build_version%"
   - cmd: "nuget restore"
