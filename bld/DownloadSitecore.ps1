@@ -7,7 +7,7 @@ $zipfile = (Join-Path $PWD "Sitecore.zip")
 function DownloadZip
 {
     if($username -eq $null -or $password -eq $null) {
-        write-error "Username and password required to download zipfile"
+        Write-Warning "Username and password required to download zipfile. Specify as arguments"
         return
     }
 
@@ -53,4 +53,8 @@ if((Test-Path $zipfile) -ne $True) {
     DownloadZip
 }
 
-ExtractZipFIle
+if((Test-Path $zipfile) -ne $True) {
+    Write-Warning "No downloaded Sitecore available"
+} else {
+    ExtractZipFIle
+}
