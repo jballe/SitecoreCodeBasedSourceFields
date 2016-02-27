@@ -2,9 +2,6 @@ version: 0.1.{build}
 
 os: Windows Server 2012
 
-init:
-- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-
 environment:
   filecryptkey:
     secure: O+Xh3uOvePVVWMIFI9OW0O6Oew0piFeAs5sS7Oj693c=
@@ -66,7 +63,5 @@ artifacts:
 
 # Deploy
 
-on_finish:
-- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 # Notification
