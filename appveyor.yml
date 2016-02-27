@@ -59,7 +59,7 @@ build:
 after_build:
   - cmd: ECHO nuget pack src\SitecoreCodeSourceFields\SitecoreCodeBasedSourceFields.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
   - cmd: nuget pack src\SitecoreCodeSourceFields\SitecoreCodeBasedSourceFields.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
-  - cmd: appveyor PushArtifact "src\SitecoreCodeSourceFields\SitecoreCodeBasedSourceFields.%GitVersion_NuGetVersion%.nupkg"
+  - cmd: appveyor PushArtifact "SitecoreCodeBasedSourceFields.%GitVersion_NuGetVersion%.nupkg"
   
 # Test
 test:
@@ -69,6 +69,7 @@ test:
 # Artifacts
 artifacts:
   - path: out\*.nupkg
+  - path: SitecoreCodeBasedSourceFields.%GitVersion_NuGetVersion%.nupkg
 
 # Deploy
 
