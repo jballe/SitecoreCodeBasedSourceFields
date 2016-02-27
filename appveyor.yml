@@ -13,11 +13,10 @@ cache:
 install:
   - nuget install secure-file -ExcludeVersion  
   - secure-file\tools\secure-file -decrypt lib\sitecore.zip.enc -secret %filecryptkey%
-  - PS: Expand-Archive -Path lib\sitecore.zip -DestinationPath src\Website\bin
 
 assembly_info:
   patch: true
-  file: MyVersion.cs
+  file: '**\AssemblyInfo.*'
   assembly_version: '{version}'
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'  
@@ -27,7 +26,26 @@ assembly_info:
 
 platform: Any CPU
 configuration: Release
-  	
+
+before_build:
+  - ps: |
+      $shell = new-object -com shell.application
+      $src = (Join-Path $PWD "lib\sitecore.zip")
+      $dst = (Join-Path $PWD "src\website\bin")
+      If((Test-Path $dst) -eq $false) {
+          md $dst
+      }
+      
+      $zip = $shell.NameSpace($src)
+      $target = $shell.NameSpace($dst)
+      Write-Host $target
+      foreach($item in $zip.items())
+      {
+        $target.copyhere($item)
+      }
+  - cmd: "echo Building version:%appveyor_build_version%"
+  - cmd: "nuget restore"
+
 build:
   project: SitecoreCodeBasedSourceFields.sln
   publish_nuget: true             # package projects with .nuspec files and push to artifacts
@@ -44,3 +62,6 @@ artifacts:
   - path: out\*.nupkg
 
 # Deploy
+
+
+# Notification
