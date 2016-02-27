@@ -19,8 +19,13 @@ function DownloadZip
     $loginurl = "https://dev.sitecore.net/api/authorization"
  
     $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-    Invoke-RestMethod -Method Post -Uri $loginurl -Body (ConvertTo-Json $credentials) -ContentType "application/json;charset=UTF-8" -WebSession $session
-    Write-Host "Download file"
+    $login = Invoke-RestMethod -Method Post -Uri $loginurl -Body (ConvertTo-Json $credentials) -ContentType "application/json;charset=UTF-8" -WebSession $session
+    If($login -eq "False") {
+        Write-Warning "Incorrect username or password"
+        return
+    }
+    
+    Write-Host "Start download of file"
     Invoke-WebRequest -Uri $url -WebSession $session -OutFile $zipfile -TimeoutSec (60 * 10)
 }
 
@@ -28,15 +33,30 @@ function DownloadZip
 [Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem') | Out-Null
 function ExtractPartOfZip($zipfile, $folder, $dst, $overwrite)
 {
+    Write-Host "Extracting $folder folder to $dst"
+    $filter = "*/$folder/*"
     [IO.Compression.ZipFile]::OpenRead($zipfile).Entries | ? {
-      $_.FullName -like "$($folder -replace '\\','/')/*"
+      $_.FullName -like $filter
     } | % {
-      $file   = Join-Path $dst $_.FullName
-      $parent = Split-Path -Parent $file
-      if (-not (Test-Path -LiteralPath $parent)) {
-        New-Item -Path $parent -Type Directory | Out-Null
+      $index = $_.FullName.indexOf($folder) + $folder.Length + 1
+      $file  = Join-Path $dst $_.FullName.Substring($index)
+
+      $exists = (Test-Path $file)
+      If($overwrite -or -not $exists) {
+        $parent = Split-Path -Parent $file
+        if (-not (Test-Path -Path $parent)) {
+            New-Item -Path $parent -Type Directory | Out-Null
+        }
+        
+        Try {
+            [IO.Compression.ZipFileExtensions]::ExtractToFile($_, $file, $overwrite)
+            Write-Debug ("Copied " + $_.FullName + " to " + $file)
+        } Catch {
+            If($file.EndsWith("\") -eq $false) {
+                Write-Warning ("Error while copying " + $file + ": " + $_.Exception.Message)
+            }
+        }
       }
-      [IO.Compression.ZipFileExtensions]::ExtractToFile($_, $file, $overwrite)
     }
 }
 
