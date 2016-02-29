@@ -1,21 +1,28 @@
-version: 0.1.{build}
+version: 0.1.{build}-{branch}
 
 os: Windows Server 2012
 
 environment:
   filecryptkey:
     secure: O+Xh3uOvePVVWMIFI9OW0O6Oew0piFeAs5sS7Oj693c=
+  SitecoreSdnUsername:
+    secure: ChkbQyGwo8D+PP19PddMog==
+  SitecoreSdnPassword:
+    secure: wMUz+VcnvWMVmEsQE7lVFQ==
 
 cache:
   - packages -> **\packages.config
-  - bld
+  - bld\Sitecore.zip -> bld\DownloadSitecore.ps1 
+  - C:\ProgramData\chocolatey\bin -> appveyor.yml
+  - C:\ProgramData\chocolatey\lib -> appveyor.yml
 
 install:
   - nuget install secure-file -ExcludeVersion  
   - secure-file\tools\secure-file -decrypt lib\sitecore.zip.enc -secret %filecryptkey%
+  - choco install gitversion.portable -y
 
 assembly_info:
-  patch: true
+  patch: false
   file: '**\AssemblyInfo.*'
   assembly_version: '{version}'
   assembly_file_version: '{version}'
@@ -43,14 +50,23 @@ before_build:
       {
         $target.copyhere($item)
       }
-  - cmd: "echo Building version:%appveyor_build_version%"
+#  - ps: |
+#      cd bld
+#      ./DownloadSitecore.ps1 ${ENV:SitecoreSdnUsername} ${ENV:SitecoreSdnPassword}
+  - ps: gitversion /l console /output buildserver /updateassemblyinfo
+  - cmd: "echo Building version: %GitVersion_NuGetVersion% by %appveyor_build_version%"
   - cmd: "nuget restore"
 
 build:
   project: SitecoreCodeBasedSourceFields.sln
-  publish_nuget: true             # package projects with .nuspec files and push to artifacts
-  publish_nuget_symbols: true     # generate and publish NuGet symbol packages
-  verbosity: detailed
+  publish_nuget: false             # package projects with .nuspec files and push to artifacts
+  publish_nuget_symbols: false     # generate and publish NuGet symbol packages
+  include_nuget_references: false  # add -IncludeReferencedProjects option while packaging NuGet artifacts
+  verbosity: normal                # quiet|minimal|normal|detailed
+
+after_build:
+  - cmd: nuget pack src\SitecoreCodeSourceFields\SitecoreCodeBasedSourceFields.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
+  - cmd: appveyor PushArtifact "SitecoreCodeBasedSourceFields.%GitVersion_NuGetVersion%.nupkg"
   
 # Test
 test:
@@ -60,8 +76,16 @@ test:
 # Artifacts
 artifacts:
   - path: out\*.nupkg
+  - path: SitecoreCodeBasedSourceFields.%GitVersion_NuGetVersion%.nupkg
 
 # Deploy
-
+deploy:
+  - provider: GitHub
+    artifact: /.*\.nupkg
+    draft: true
+    prerelease: false
+    on:
+      branch: master                # release from master branch only
+      appveyor_repo_tag: true       # deploy on tag push only
 
 # Notification

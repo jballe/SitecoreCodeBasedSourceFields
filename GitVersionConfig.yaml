@@ -1,0 +1,15 @@
+assembly-versioning-scheme: MajorMinorPatch
+mode: ContinuousDelivery
+branches:
+  master:
+    prevent-increment-of-merged-branch-version: true
+  develop:
+    tag: beta
+  features?[/-]:
+    tag: alpha-{BranchName}
+    increment: Minor
+  (pull|pull\-requests|pr)[/-]:
+    tag: PullRequest
+    increment: Minor
+    tag-number-pattern: '[/-](?<number>\d+)[-/]'
+    track-merge-target: true
