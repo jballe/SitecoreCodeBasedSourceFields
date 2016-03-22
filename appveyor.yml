@@ -9,6 +9,10 @@ environment:
     secure: ChkbQyGwo8D+PP19PddMog==
   SitecoreSdnPassword:
     secure: wMUz+VcnvWMVmEsQE7lVFQ==
+  TdsOwner:
+    secure: q9CsOiu5NgHb6se1gPEFvw==
+  TdsKey:
+    secure: gTgRttYuH2XbgLnZUkyhvVwCYGjTyRNGLFf7wWyNugM=
 
 cache:
   - packages -> **\packages.config
@@ -39,6 +43,7 @@ before_build:
   - cmd: "echo Building version: %GitVersion_NuGetVersion% by %appveyor_build_version%"
   - cmd: nuget sources add -Name "MyGet jballe" -Source "https://www.myget.org/F/jballe/api/v2"
   - cmd: nuget restore
+  - ps: Set-Content -Path (Join-Path ((Get-ChildItem -Path "C:\ProjectsGitHub\SitecoreCodeBasedSourceFields\packages" -Filter "HedgehogDevelopment.TDS*" | Select-Object -First 1).FullName) "TDSLicense.config") -Value "<?xml version=""1.0"" encoding=""utf-8"" ?><license Owner=""${env:TdsOwner}"" Key=""${env:TdsKey}"" />" -Encoding UTF8
 
 build:
   project: SitecoreCodeBasedSourceFields.sln
