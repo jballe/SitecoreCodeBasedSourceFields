@@ -61,9 +61,6 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="App_Config\ConnectionStrings.config" />
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Config\Include\Z.SwitchMasterToWeb\" />
+    <Folder Include="Properties\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
