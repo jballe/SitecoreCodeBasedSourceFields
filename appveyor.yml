@@ -67,12 +67,47 @@ artifacts:
 # Deploy
 deploy:
   - provider: GitHub
-    artifact: /.*\.nupkg
+    auth_token:
+      secure: 1bA2QHeAJT7pS9kPVBAc6O9GlC/Y1Q7m9iwMhgos1fblPEjz2vKN0vYbu/cHO15h
+    artifact: /.*\.nupkg/
     draft: true
     prerelease: false
+    release: v$(GitVersion_NuGetVersion)
+    description: 'Release version $(GitVersion_NuGetVersion)'
     on:
-      branch: master                # release from master branch only
-      appveyor_repo_tag: true       # deploy on tag push only
+      branch: master
+      appveyor_repo_tag: true       # deploy on tag push only (not annotated tag)
+
+  - provider: GitHub
+    auth_token:
+      secure: 1bA2QHeAJT7pS9kPVBAc6O9GlC/Y1Q7m9iwMhgos1fblPEjz2vKN0vYbu/cHO15h
+    artifact: /.*\.nupkg/
+    draft: true
+    prerelease: true
+    release: v$(GitVersion_NuGetVersion)
+    description: 'Prerelease version $(GitVersion_NuGetVersion)'
+    on:
+      branch: develop
+      appveyor_repo_tag: true       # deploy on tag push only (not annotated tag)
+
+  - provider: NuGet
+    artifact: /.*\.nupkg/
+    server: https://www.myget.org/F/jballepublic/api/v2/package
+    api_key: 
+      secure: CG8nlKiibBbMhO46rsPsAiEw2CC1auHSWS1pIxqbfMEmSbG7cYWwJyxuuzJB6gyD
+    skip_symbols: false
+    on:
+      branch: master
+
+  - provider: NuGet
+    artifact: /.*\.nupkg/
+    server: https://www.myget.org/F/jballe/api/v2/package
+    api_key: 
+      secure: CG8nlKiibBbMhO46rsPsAiEw2CC1auHSWS1pIxqbfMEmSbG7cYWwJyxuuzJB6gyD
+    skip_symbols: false
+    on:
+      branch: develop
+
 
 # Notification
 
