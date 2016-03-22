@@ -14,7 +14,7 @@
     <file src="bin\Release\SitecoreCodeSourceFields.dll" target="lib\net40" />
 
     <!-- TDS -->
-    <!-- file src="..\SystemContent.Core\Package_Release\SitecoreCodeBasedSourceFields.SystemContent.Core.scitems.update" /-->
+    <file src="..\SystemContent.Core\Package_Release\*.update" target="tools" />
 
   </files>
 </package>
