@@ -32,7 +32,7 @@ platform: Any CPU
 configuration: Release
 
 before_build:
-  - ps:  bld/DownloadSitecore.ps1 ${ENV:SitecoreSdnUsername} ${ENV:SitecoreSdnPassword} src\Website
+  - ps:  bld/DownloadSitecore.ps1 ${ENV:SitecoreSdnUsername} ${ENV:SitecoreSdnPassword}
   - cmd: md src\website\App_Data\License
   - cmd: xcopy bld\license.xml src\website\app_data\License
   - ps: gitversion /l console /output buildserver /updateassemblyinfo
