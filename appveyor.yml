@@ -17,13 +17,11 @@ environment:
 cache:
   - packages -> **\packages.config
   - bld\Sitecore.zip -> bld\DownloadSitecore.ps1 
-  - Sitecore.zip -> bld\DownloadSitecore.ps1 
   - C:\ProgramData\chocolatey\bin -> appveyor.yml
   - C:\ProgramData\chocolatey\lib -> appveyor.yml
 
 install:
   - nuget install secure-file -ExcludeVersion  
-  - secure-file\tools\secure-file -decrypt lib\sitecore.zip.enc -secret %filecryptkey%
   - secure-file\tools\secure-file -decrypt bld\license.xml.enc -secret %filecryptkey%
   - choco install gitversion.portable -y
 
