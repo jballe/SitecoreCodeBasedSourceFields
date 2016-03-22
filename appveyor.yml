@@ -9,6 +9,10 @@ environment:
     secure: ChkbQyGwo8D+PP19PddMog==
   SitecoreSdnPassword:
     secure: wMUz+VcnvWMVmEsQE7lVFQ==
+  TdsOwner:
+    secure: q9CsOiu5NgHb6se1gPEFvw==
+  TdsKey:
+    secure: gTgRttYuH2XbgLnZUkyhvVwCYGjTyRNGLFf7wWyNugM=
 
 cache:
   - packages -> **\packages.config
@@ -18,16 +22,11 @@ cache:
 
 install:
   - nuget install secure-file -ExcludeVersion  
-  - secure-file\tools\secure-file -decrypt lib\sitecore.zip.enc -secret %filecryptkey%
+  - secure-file\tools\secure-file -decrypt bld\license.xml.enc -secret %filecryptkey%
   - choco install gitversion.portable -y
 
 assembly_info:
   patch: false
-  file: '**\AssemblyInfo.*'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'  
-
 
 # Build
 
@@ -35,27 +34,14 @@ platform: Any CPU
 configuration: Release
 
 before_build:
-  - ps: |
-      $shell = new-object -com shell.application
-      $src = (Join-Path $PWD "lib\sitecore.zip")
-      $dst = (Join-Path $PWD "src\website\bin")
-      If((Test-Path $dst) -eq $false) {
-          md $dst
-      }
-      
-      $zip = $shell.NameSpace($src)
-      $target = $shell.NameSpace($dst)
-      Write-Host $target
-      foreach($item in $zip.items())
-      {
-        $target.copyhere($item)
-      }
-#  - ps: |
-#      cd bld
-#      ./DownloadSitecore.ps1 ${ENV:SitecoreSdnUsername} ${ENV:SitecoreSdnPassword}
-  - ps: gitversion /l console /output buildserver /updateassemblyinfo
+  - ps:  bld/DownloadSitecore.ps1 ${ENV:SitecoreSdnUsername} ${ENV:SitecoreSdnPassword}
+  - cmd: md src\website\App_Data\License
+  - cmd: xcopy bld\license.xml src\website\app_data\License
+  - ps:  gitversion /l console /output buildserver /updateassemblyinfo
   - cmd: "echo Building version: %GitVersion_NuGetVersion% by %appveyor_build_version%"
-  - cmd: "nuget restore"
+  - cmd: nuget sources add -Name "MyGet jballe" -Source "https://www.myget.org/F/jballe/api/v2"
+  - cmd: nuget restore
+  - ps: Set-Content -Path (Join-Path ((Get-ChildItem -Path packages -Filter "HedgehogDevelopment.TDS*" | Select-Object -First 1).FullName) "build\TDSLicense.config") -Value "<?xml version=""1.0"" encoding=""utf-8"" ?><license Owner=""${env:TdsOwner}"" Key=""${env:TdsKey}"" />" -Encoding UTF8
 
 build:
   project: SitecoreCodeBasedSourceFields.sln
@@ -89,3 +75,7 @@ deploy:
       appveyor_repo_tag: true       # deploy on tag push only
 
 # Notification
+
+# Investigate
+#on_finish:
+#- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))

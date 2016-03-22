@@ -22,8 +22,9 @@ src/Website/App_Data/**
 !src/Website/packages.config
 !src/Website/App_Config/ConnectionStrings.config
 !src/Website/App_Config/Include/Z.Runtime/
-!src/Website/Properties/
+!src/Website/Properties/*
 
 #bld
 bld/Sitecore.zip
 lib/Sitecore.zip
+Sitecore.zip

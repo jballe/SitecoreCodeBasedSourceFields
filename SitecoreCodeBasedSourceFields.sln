@@ -18,6 +18,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".tds", ".tds", "{E0B7B410-1
 		TdsGlobal.config = TdsGlobal.config
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bld", "bld", "{DBD3B129-FDE0-4CAC-966F-22C0FAD407F0}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		bld\DownloadSitecore.ps1 = bld\DownloadSitecore.ps1
+		GitVersionConfig.yaml = GitVersionConfig.yaml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +34,7 @@ Global
 		{DF3D5C4A-4207-44E3-8BC4-A2B4716F21D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DF3D5C4A-4207-44E3-8BC4-A2B4716F21D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF3D5C4A-4207-44E3-8BC4-A2B4716F21D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF3D5C4A-4207-44E3-8BC4-A2B4716F21D9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4A9DD34D-91E4-404F-827A-1349CB2497B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4A9DD34D-91E4-404F-827A-1349CB2497B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A9DD34D-91E4-404F-827A-1349CB2497B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -42,6 +50,7 @@ Global
 		{61A992DB-404F-4877-9483-1D730E2C9076}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{61A992DB-404F-4877-9483-1D730E2C9076}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61A992DB-404F-4877-9483-1D730E2C9076}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61A992DB-404F-4877-9483-1D730E2C9076}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
