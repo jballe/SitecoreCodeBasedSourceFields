@@ -36,8 +36,8 @@ before_build:
   - cmd: md src\website\App_Data\License
   - cmd: xcopy bld\license.xml src\website\app_data\License
   - ps:  gitversion /l console /output buildserver /updateassemblyinfo
-  - cmd: echo Building version: %GitVersion_NuGetVersion% by %appveyor_build_version%
-  . cmd: nuget sources add -Name "MyGet jballe" -Source "https://www.myget.org/F/jballe/api/v2"
+  - cmd: "echo Building version: %GitVersion_NuGetVersion% by %appveyor_build_version%"
+  - cmd: nuget sources add -Name "MyGet jballe" -Source "https://www.myget.org/F/jballe/api/v2"
   - cmd: nuget restore
 
 build:
