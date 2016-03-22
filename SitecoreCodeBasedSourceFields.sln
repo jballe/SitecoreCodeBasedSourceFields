@@ -18,6 +18,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".tds", ".tds", "{E0B7B410-1
 		TdsGlobal.config = TdsGlobal.config
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bld", "bld", "{DBD3B129-FDE0-4CAC-966F-22C0FAD407F0}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		bld\DownloadSitecore.ps1 = bld\DownloadSitecore.ps1
+		GitVersionConfig.yaml = GitVersionConfig.yaml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

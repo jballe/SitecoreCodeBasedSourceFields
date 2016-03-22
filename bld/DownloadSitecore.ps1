@@ -1,8 +1,15 @@
-﻿param($username, $password) 
+﻿param([parameter(Mandatory)]$username, [parameter(Mandatory)]$password) 
 
-$zipfile = (Join-Path $PWD "Sitecore.zip")
+#Sitecore 8.1 Update 1
+$downloadurl = "https://dev.sitecore.net/~/media/607AA63EF66E45D0828023CD8E127D88.ashx"
+$versionfolder = "Sitecore 8.1 rev. 151207" # Sitecore 8.1 Update-1
 
-# Sitecore 8.1 Update-1
+#Sitecore 8.1 Update 2
+#$downloadurl = "https://dev.sitecore.net/~/media/4AD00668158F4960B7C76B0C7A1B6EED.ashx"
+#$versionfolder = "Sitecore 8.1 rev. 160302"
+
+$zipfile = (Join-Path $PSScriptRoot "Sitecore.zip")
+$Destination = (Join-Path $PSScriptRoot "..\src\Website" -Resolve)
 
 function DownloadZip
 {
@@ -15,26 +22,28 @@ function DownloadZip
         username = $username
         password = $password 
     }
-    $url = "https://dev.sitecore.net/~/media/607AA63EF66E45D0828023CD8E127D88.ashx"
-    $loginurl = "https://dev.sitecore.net/api/authorization"
- 
+
+    $loginurl = "https://dev.sitecore.net/api/authorization" 
     $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+
+    write-debug "Login to $loginurl with user $username"
     $login = Invoke-RestMethod -Method Post -Uri $loginurl -Body (ConvertTo-Json $credentials) -ContentType "application/json;charset=UTF-8" -WebSession $session
-    If($login -eq "False") {
+    If($login -ne $True) {
         Write-Warning "Incorrect username or password"
         return
     }
     
     Write-Host "Start download of file"
-    Invoke-WebRequest -Uri $url -WebSession $session -OutFile $zipfile -TimeoutSec (60 * 10)
+    Invoke-WebRequest -Uri $downloadurl -WebSession $session -OutFile $zipfile -TimeoutSec (60 * 10)
 }
 
 # Extract
 [Reflection.Assembly]::LoadWithPartialName('System.IO.Compression.FileSystem') | Out-Null
 function ExtractPartOfZip($zipfile, $folder, $dst, $overwrite)
-{
+{    
     Write-Host "Extracting $folder folder to $dst"
-    $filter = "*/$folder/*"
+    $filter = "${versionfolder}/${folder}/*"
+    write-debug "Filter: $filter"
     [IO.Compression.ZipFile]::OpenRead($zipfile).Entries | ? {
       $_.FullName -like $filter
     } | % {
@@ -48,11 +57,11 @@ function ExtractPartOfZip($zipfile, $folder, $dst, $overwrite)
             New-Item -Path $parent -Type Directory | Out-Null
         }
         
-        Try {
-            [IO.Compression.ZipFileExtensions]::ExtractToFile($_, $file, $overwrite)
-            Write-Debug ("Copied " + $_.FullName + " to " + $file)
-        } Catch {
-            If($file.EndsWith("\") -eq $false) {
+        If($file.EndsWith("\") -eq $false) {
+            Try {
+                Write-Debug ("Will copy " + $_.FullName + " to " + $file)
+                [IO.Compression.ZipFileExtensions]::ExtractToFile($_, $file, $overwrite)
+            } Catch {
                 Write-Warning ("Error while copying " + $file + ": " + $_.Exception.Message)
             }
         }
@@ -63,18 +72,19 @@ function ExtractPartOfZip($zipfile, $folder, $dst, $overwrite)
 function ExtractZipFile 
 {
     Write-Host "Extracting content of zipfile to proper locations"
-    $Destination = Join-Path ($PWD) "..\src\Website"
     ExtractPartOfZip -zipfile $zipfile -folder "Website" -dst $Destination -overwrite $false
     ExtractPartOfZip -zipfile $zipfile -folder "Data" -dst (Join-Path $Destination "App_Data\Sitecore") -overwrite $false
-    ExtractPartOfZip -zipfile $zipfile -folder "Database" -dst (Join-Path $Destination "App_Data\Databases") -overwrite $false
+    ExtractPartOfZip -zipfile $zipfile -folder "Databases" -dst (Join-Path $Destination "App_Data\Databases") -overwrite $false
 }
 
 if((Test-Path $zipfile) -ne $True) {
     DownloadZip
+} else {
+    Write-Host "Sitecore zip file already exists, will use that"
 }
 
 if((Test-Path $zipfile) -ne $True) {
     Write-Warning "No downloaded Sitecore available"
 } else {
-    ExtractZipFIle
+    ExtractZipFile
 }
